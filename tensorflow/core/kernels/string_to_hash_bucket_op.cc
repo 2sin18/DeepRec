@@ -62,10 +62,4 @@ class LegacyStringToHashBucketOp : public OpKernel {
 REGISTER_KERNEL_BUILDER(Name("StringToHashBucket").Device(DEVICE_CPU),
                         LegacyStringToHashBucketOp);
 
-REGISTER_KERNEL_BUILDER(Name("StringToHashBucketFast").Device(DEVICE_CPU),
-                        StringToHashBucketOp<Fingerprint64>);
-
-REGISTER_KERNEL_BUILDER(Name("StringToHashBucketStrong").Device(DEVICE_CPU),
-                        StringToKeyedHashBucketOp<StrongKeyedHash>);
-
 }  // namespace tensorflow
