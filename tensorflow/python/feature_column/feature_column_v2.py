@@ -4178,7 +4178,7 @@ class EmbeddingColumn(
       max_norm,
       trainable,
       coalesced_scope=None,
-      do_fusion=None):
+      do_fusion=False):
     """Create feature column in compatible way."""
     return super(EmbeddingColumn, cls).__new__(
         cls, categorical_column, dimension, combiner, initializer,
