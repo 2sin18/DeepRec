@@ -247,9 +247,6 @@ class StorageOption(object):
                storage_path=None):
     self.storage_type = storage_type
     self.storage_path = storage_path
-    if not file_io.io.gfile.exists(storage_path):
-      file_io.io.gfile.makedirs(storage_path)
-
 
 @tf_export(v1=["EmbeddingVariableOption"])
 class EmbeddingVariableOption(object):
