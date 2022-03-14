@@ -780,7 +780,6 @@ def tf_repositories(path_prefix = "", tf_repo_name = ""):
         sha256 = "bb8d1536aad708ec807bc675e12e5838c2f84481dec4005cd7a9bbd49e326ba1",
         strip_prefix = "NVTX-3.0.1/c/include",
         urls = [
-            "https://storage.googleapis.com/mirror.tensorflow.org/github.com/NVIDIA/NVTX/archive/v3.0.1.tar.gz",
             "https://github.com/NVIDIA/NVTX/archive/v3.0.1.tar.gz",
         ],
     )
