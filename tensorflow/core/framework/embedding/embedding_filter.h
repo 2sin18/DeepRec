@@ -44,7 +44,7 @@ template<typename K, typename V, typename EV>
 class EmbeddingFilter {
  public:
   virtual void LookupOrCreate(K key, V* val, const V* default_value_ptr,
-                               ValuePtr<V>** value_ptr, int count) = 0;
+    ValuePtr<V>** value_ptr, int count, const V* default_value_no_permission) = 0;
   virtual Status LookupOrCreateKey(K key, ValuePtr<V>** val, bool* is_filter) = 0;
 
   virtual int64 GetFreq(K key, ValuePtr<V>* value_ptr) = 0;
@@ -87,14 +87,15 @@ class BloomFilter : public EmbeddingFilter<K, V, EV> {
   }
 
   void LookupOrCreate(K key, V* val, const V* default_value_ptr,
-                       ValuePtr<V>** value_ptr, int count) override {
+                      ValuePtr<V>** value_ptr, int count,
+                      const V* default_value_no_permission) override {
     if (GetBloomFreq(key) >= config_.filter_freq) {
       TF_CHECK_OK(ev_->LookupOrCreateKey(key, value_ptr));
       V* mem_val = ev_->LookupOrCreateEmb(*value_ptr, default_value_ptr);
       memcpy(val, mem_val, sizeof(V) * ev_->ValueLen());
     } else {
       AddFreq(key, count);
-      memcpy(val, default_value_ptr, sizeof(V) * ev_->ValueLen());
+      memcpy(val, default_value_no_permission, sizeof(V) * ev_->ValueLen());
     }
   }
 
@@ -360,14 +361,14 @@ class CounterFilter : public EmbeddingFilter<K, V, EV> {
   }
 
   void LookupOrCreate(K key, V* val, const V* default_value_ptr,
-                      ValuePtr<V>** value_ptr,
-                       int count) override {
+                      ValuePtr<V>** value_ptr, int count,
+                      const V* default_value_no_permission) override {
     TF_CHECK_OK(ev_->LookupOrCreateKey(key, value_ptr));
     if (GetFreq(key, *value_ptr) >= config_.filter_freq) {
       V* mem_val = ev_->LookupOrCreateEmb(*value_ptr, default_value_ptr);
       memcpy(val, mem_val, sizeof(V) * ev_->ValueLen());
     } else {
-      memcpy(val, default_value_ptr, sizeof(V) * ev_->ValueLen());
+      memcpy(val, default_value_no_permission, sizeof(V) * ev_->ValueLen());
     }
   }
 
@@ -446,7 +447,8 @@ class NullableFilter : public EmbeddingFilter<K, V, EV> {
   }
 
   void LookupOrCreate(K key, V* val, const V* default_value_ptr,
-                      ValuePtr<V>** value_ptr, int count) override {
+                      ValuePtr<V>** value_ptr, int count,
+                      const V* default_value_no_permission) override {
     TF_CHECK_OK(ev_->LookupOrCreateKey(key, value_ptr));
     V* mem_val = ev_->LookupOrCreateEmb(*value_ptr, default_value_ptr);
     memcpy(val, mem_val, sizeof(V) * ev_->ValueLen());
